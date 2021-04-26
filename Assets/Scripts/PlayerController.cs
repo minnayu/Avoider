@@ -11,15 +11,10 @@ public class PlayerController : MonoBehaviour
     public bool HasKey = false;
 
     Vector3 startingPos;
-    
-    //half a second click
-    private const float DOUBLE_CLICK_TIME = 0.5f;
-    private float lastClickTime;
-    private bool HasSpeedBoost = false;
 
-    public int speedModAmount = 0;
-    private float speedTimeMax = 1.5f;
-    private float speedTimeCur = 0f;
+    //half a second click
+    private float ClickTime;
+    private bool doubleClicked = false;
 
     void Start()
     {
@@ -34,43 +29,33 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            float timeSinceLastClick = Time.time - lastClickTime;
+            float timeSinceLastClick = Time.time - ClickTime;
+            if (timeSinceLastClick <= .2f)
+            {
+                doubleClicked = true;
+            }
+            ClickTime = Time.time;
 
-            if (timeSinceLastClick <= DOUBLE_CLICK_TIME)
+            if (doubleClicked)
             {
-                Debug.Log("Double Click");
-                HasSpeedBoost = true;
-                if (HasSpeedBoost && speedTimeCur < speedTimeMax)
-                {
-                    Debug.Log("speed boost");
-                    speed = speedModAmount;
-                    //StartCoroutine(Wait());
-                    speedTimeCur += Time.fixedDeltaTime;
-                }
-                else
-                {
-                    speedTimeCur = 0f;
-                    speed = 3;
-                    HasSpeedBoost = false;
-                }
+                Debug.Log("Player speed doubled");
+                speed = 6f;
+                Invoke("ResetSpeed", 1.5f);
             }
-            else
-            {
-                StopAllCoroutines();
-                StartCoroutine(MoveTo(transform.position, mouseInSpace, speed));
-            }
-            
-            lastClickTime = Time.time;
+
+            StopAllCoroutines();
+            StartCoroutine(MoveTo(transform.position, mouseInSpace, speed));
+
         }
-        
 
     }
 
-    IEnumerator Wait()
+    void ResetSpeed()
     {
-        yield return new WaitForSeconds(1.5f);
-        Debug.Log("Speed boost over");
+        speed = 3f;
+        Debug.Log("Player speed reset");
     }
+
 
     IEnumerator MoveTo(Vector3 start, Vector3 destination, float speed)
     {

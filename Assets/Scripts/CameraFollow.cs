@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CameraFollow : MonoBehaviour
 {
@@ -17,8 +18,8 @@ public class CameraFollow : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Quit Game");
-        Application.Quit();
+        Debug.Log("Game Quit");
+        SceneManager.LoadScene("Menu");
     }
 }
 
